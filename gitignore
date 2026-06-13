@@ -1,0 +1,5 @@
+# Gizli anahtarları içerir — ASLA commit edilmemeli
+.env
+
+# Bağımlılıklar — Render/npm install ile yeniden oluşturulur
+node_modules/

@@ -1,0 +1,19 @@
+{
+  "name": "anlat-hoca-anlat-yt-proxy",
+  "version": "1.0.0",
+  "description": "YouTube Data API v3 için anahtar gizleyen proxy sunucusu",
+  "main": "proxy-server.js",
+  "scripts": {
+    "start": "node proxy-server.js",
+    "dev": "node --watch proxy-server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "node-fetch": "^2.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
