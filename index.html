@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anlat Hoca Anlat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- FONT EXPANSION: Notlar editörü için genişletilmiş yazı tipi ailesi (Klasik / Modern / Monospace / El Yazısı) -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Raleway:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Merriweather:wght@400;700&family=Lora:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600&family=Fira+Code:wght@400;500;600&family=Space+Mono:wght@400;700&family=Caveat:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://accounts.google.com/gsi/client" async defer onload="initGoogleAuth()"></script>
+<style>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+  vertical-align: middle;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar">
+  <a class="logo" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" title="YouTube'a git">
+    <div class="logo-icon">
+      <span class="material-symbols-outlined" style="font-size:16px;color:#8b5cf6">school</span>
+    </div>
+    <div class="logo-text">Anlat <span>Hoca</span> Anlat</div>
+  </a>
+
+  <div class="topbar-right">
+    <button class="tb-btn" id="aiBtn" onclick="openAiPanel()" title="AI Asistan & Flashcard" style="color:#a78bfa">
+      <span class="material-symbols-outlined" style="color:#a78bfa">auto_awesome</span> AI
+    </button>
+    <button class="tb-btn" id="notesBtn" onclick="openNotesPanel()" title="Notlar — Ders Çalışma Defteri" style="color:#f5c842">
+      <span class="material-symbols-outlined" style="color:#f5c842">sticky_note_2</span> Notlar
+    </button>
+    <button class="tb-btn" id="calendarBtn" onclick="openCalendarPanel()" title="Takvim & Grafik & Playlist Yöneticisi" style="color:#4ae176">
+      <span class="material-symbols-outlined" style="color:#4ae176">calendar_month</span> Takvim
+    </button>
+    <button class="tb-btn" onclick="openShortcutsModal()" title="Kısayollar">
+      <span class="material-symbols-outlined">keyboard_command_key</span> Kısayollar
+    </button>
+    <button class="tb-btn" id="expandBtn" onclick="toggleExpand()" title="Tam Ekran">
+      <span class="material-symbols-outlined" id="expandIcon">fullscreen</span>
+    </button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn vibes-tb-btn" id="vibesBtn" onclick="toggleVibesPanel()" title="Vibes — Müzik & Ortam Sesleri">
+      <span class="material-symbols-outlined" style="font-size:16px;color:#a78bfa">headphones</span>
+      <span>Vibes</span>
+      <span class="vibes-active-dot" id="vibesActiveDot" style="display:none"></span>
+    </button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn settings-tb-btn" id="settingsBtn" onclick="openSettingsPanel()" title="Ayarlar">
+      <span class="material-symbols-outlined">settings</span> Ayarlar
+    </button>
+    <span class="topbar-version">v5.0</span>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS PANEL ═══ -->
+<div class="settings-overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettingsPanel()">
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+      <div class="settings-title">
+        <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent)">settings</span>
+        Ayarlar
+      </div>
+      <button class="settings-close" onclick="closeSettingsPanel()">✕</button>
+    </div>
+
+    <!-- TEMA -->
+    <div class="settings-section">
+      <div class="settings-section-title">🎨 Görünüm</div>
+      <div class="settings-row">
+        <div class="settings-row-label">
+          <span class="material-symbols-outlined settings-row-icon">dark_mode</span>
+          Tema
+        </div>
+        <div class="settings-theme-btns">
+          <button class="settings-theme-btn" id="themeDarkBtn" onclick="setTheme('dark')">🌙 Karanlık</button>
+          <button class="settings-theme-btn" id="themeLightBtn" onclick="setTheme('light')">☀️ Aydınlık</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VİDEO HIZ -->
+    <div class="settings-section">
+      <div class="settings-section-title">▶ Video Kontrolü</div>
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div class="settings-row-label">
+          <span class="material-symbols-outlined settings-row-icon">speed</span>
+          Oynatma Hızı
+        </div>
+        <div class="settings-speed-btns" id="settingsSpeedBtns">
+          <button class="settings-speed-btn" onclick="setSpeed(0.5)">0.5×</button>
+          <button class="settings-speed-btn" onclick="setSpeed(0.75)">0.75×</button>
+          <button class="settings-speed-btn active" onclick="setSpeed(1)">1×</button>
+          <button class="settings-speed-btn" onclick="setSpeed(1.25)">1.25×</button>
+          <button class="settings-speed-btn" onclick="setSpeed(1.5)">1.5×</button>
+          <button class="settings-speed-btn" onclick="setSpeed(1.75)">1.75×</button>
+          <button class="settings-speed-btn" onclick="setSpeed(2)">2×</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label">
+          <span class="material-symbols-outlined settings-row-icon">skip_next</span>
+          Otomatik Sonraki Video
+        </div>
+        <div class="settings-toggle" id="settingsAutoplayToggle" onclick="toggleAutoPlayFromSettings()">
+          <div class="settings-toggle-knob"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYLİST YÖNETİCİSİ -->
+    <div class="settings-section">
+      <div class="settings-section-title">🗂 Playlist</div>
+      <div class="settings-row">
+        <div class="settings-row-label">
+          <span class="material-symbols-outlined settings-row-icon">playlist_play</span>
+          Playlist Yöneticisi
+        </div>
+        <button class="settings-action-btn" onclick="closeSettingsPanel();openCalendarPanel();setTimeout(function(){switchCalTab('manager')},100)">
+          Aç <span class="material-symbols-outlined" style="font-size:14px">open_in_new</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- GOOGLE GİRİŞ -->
+    <div class="settings-section">
+      <div class="settings-section-title">☁️ Google Hesabı & Drive</div>
+      <div class="settings-row" id="settingsGoogleRow">
+        <div class="settings-row-label">
+          <span class="material-symbols-outlined settings-row-icon">account_circle</span>
+          <span id="settingsGoogleStatus">Giriş yapılmadı</span>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="settings-google-btn" id="settingsSignInBtn" onclick="signInGoogleFromSettings()">
+            <svg width="13" height="13" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            Giriş Yap
+          </button>
+          <button class="settings-google-btn danger" id="settingsSignOutBtn" onclick="signOutGoogleFromSettings()" style="display:none">Çıkış</button>
+        </div>
+      </div>
+      <div class="settings-row" id="settingsDriveRow" style="display:none">
+        <div class="settings-row-label">
+          <span class="material-symbols-outlined settings-row-icon" style="color:#4285f4">cloud_upload</span>
+          Drive Yedekleme
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="settings-action-btn" id="settingsDriveBackupBtn" onclick="backupToDrive()">☁ Yedekle</button>
+          <button class="settings-action-btn" id="settingsDriveRestoreBtn" onclick="restoreFromDrive()">↓ Geri Yükle</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- API ANAHTARLARI -->
+    <div class="settings-section">
+      <div class="settings-section-title">🔑 API Anahtarları</div>
+
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px">
+        <div class="settings-row-label" style="align-items:flex-start;flex-direction:column;gap:3px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="material-symbols-outlined settings-row-icon">key</span>
+            AI API Anahtarı (Gemini)
+          </div>
+          <div id="settingsAiApiKeyStatus" style="font-size:10px;color:var(--muted);margin-left:22px">Girilmedi — AI sohbet ve flashcard özellikleri kapalı</div>
+        </div>
+        <div style="display:flex;gap:6px;width:100%;align-items:center">
+          <input
+            type="password"
+            id="settingsAiApiKeyInput"
+            placeholder="AIza..."
+            autocomplete="off"
+            spellcheck="false"
+            onfocus="onSettingsAiKeyFocus()"
+            style="flex:1;min-width:0;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 11px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);outline:none;transition:border-color 0.15s"
+            onkeydown="if(event.key==='Enter')saveAiKeyFromSettings()"
+          >
+          <button class="settings-action-btn" onclick="saveAiKeyFromSettings()">Kaydet</button>
+          <button class="settings-action-btn danger" onclick="clearAiKeyFromSettings()" title="API anahtarından çıkış yap / sil">🚪 Çıkış</button>
+        </div>
+        <div style="font-size:10px;color:var(--muted);line-height:1.5;padding:0 2px">
+          AI sohbet ve flashcard özellikleri için ücretsiz bir Google Gemini API anahtarına ihtiyaç var.<br>
+          Key almak için: <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--accent)">aistudio.google.com/apikey</a> adresine Google hesabınla giriş yap ve "Create API key" butonuna bas.<br>
+          Anahtar sadece bu tarayıcıda (localStorage) saklanır, hiçbir sunucuya gönderilmez.
+        </div>
+      </div>
+
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;margin-top:14px">
+        <div class="settings-row-label" style="align-items:flex-start;flex-direction:column;gap:3px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="material-symbols-outlined settings-row-icon">key</span>
+            YouTube Data API v3 Key
+          </div>
+          <div id="settingsYtApiKeyStatus" style="font-size:10px;color:var(--muted);margin-left:22px">Girilmedi — proxy key kullanılıyor</div>
+        </div>
+        <div style="display:flex;gap:6px;width:100%;align-items:center">
+          <input
+            type="password"
+            id="settingsYtApiKeyInput"
+            placeholder="AIza..."
+            autocomplete="off"
+            spellcheck="false"
+            onfocus="onSettingsYtKeyFocus()"
+            style="flex:1;min-width:0;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 11px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);outline:none;transition:border-color 0.15s"
+            onkeydown="if(event.key==='Enter')saveUserYtKeyFromSettings()"
+          >
+          <button class="settings-action-btn" onclick="saveUserYtKeyFromSettings()">Kaydet</button>
+          <button class="settings-action-btn danger" onclick="clearUserYtKeyFromSettings()" title="Kayıtlı key'i sil">🗑</button>
+        </div>
+        <div style="font-size:10px;color:var(--muted);line-height:1.5;padding:0 2px">
+          Kendi key'ini girersen YouTube API istekleri proxy üzerinden değil <b>doğrudan</b> Google'a gider — proxy kotanı tüketmez.<br>
+          Key almak için: <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" style="color:var(--accent)">console.cloud.google.com</a> → API & Services → Credentials → Create API Key → YouTube Data API v3 etkinleştir.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ MAIN LAYOUT ═══ -->
+<div class="layout" id="mainLayout">
+
+  <!-- LEFT: Main Content -->
+  <div class="main">
+
+    <!-- URL Input -->
+    <div class="add-bar">
+      <div class="url-input-wrap">
+        <span class="material-symbols-outlined url-input-icon">search</span>
+        <input type="text" id="urlInput" placeholder="YouTube linki yapıştır veya arama yap..."
+          onkeydown="if(event.key==='Enter')handleInput()"
+          oninput="updateUrlClearBtn()">
+        <button id="urlClearBtn" class="url-clear-btn" onclick="clearUrlInput()" title="Temizle" style="display:none">✕</button>
+      </div>
+      <button onclick="handleInput()">
+        GİR <span class="material-symbols-outlined" style="font-size:17px">arrow_forward_ios</span>
+      </button>
+      <button class="yt-import-btn" onclick="openYtImportModal()" title="YouTube Playlist İçe Aktar">
+        <span class="material-symbols-outlined" style="font-size:18px">library_add</span>
+      </button>
+    </div>
+
+
+
+    <!-- Video Player -->
+    <div class="player-wrap" id="playerWrap" style="position:relative">
+      <div class="player-placeholder" id="placeholder">
+        <div class="play-circle">
+          <span class="material-symbols-outlined ms" style="font-size:44px;color:#8b5cf6;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48;margin-left:5px">play_arrow</span>
+        </div>
+        <p>Playlist'e video ekle ve izlemeye başla</p>
+      </div>
+    </div>
+
+    <!-- Now Playing -->
+    <div class="now-playing" id="nowPlayingBar" style="display:none">
+      <div class="np-info">
+        <div class="np-label" id="npLabel">
+          <span class="np-dot"></span>
+          Şu An İzleniyor
+        </div>
+        <div class="np-title" id="npTitle">—</div>
+      </div>
+      <button class="np-copy-url-btn" id="npCopyUrlBtn" onclick="copyCurrentVideoUrl()" title="Video URL'sini kopyala">
+        <span class="material-symbols-outlined" style="font-size:15px">link</span> URL Kopyala
+      </button>
+      <div class="now-play-badge">CANLI</div>
+    </div>
+
+    <!-- Notes Section -->
+    <div class="notes-section" id="notesSection" style="display:none">
+      <div class="notes-header">
+        <div class="notes-title">
+          <span class="material-symbols-outlined ms" style="font-size:17px">sticky_note_2</span>
+          Zaman Damgası Notları
+        </div>
+      </div>
+      <div class="notes-add-row">
+        <input type="text" id="noteInput" placeholder="Not ekle (şu anki zaman damgasına)" onkeydown="if(event.key==='Enter')addNote()">
+        <button class="note-add-btn" onclick="addNote()">+ Not</button>
+      </div>
+      <div class="notes-list" id="notesList">
+        <div class="notes-empty">Henüz not yok. Video oynarken not ekleyin.</div>
+      </div>
+    </div>
+  </div><!-- /main -->
+
+  <!-- RIGHT: Sidebar -->
+  <div class="sidebar">
+
+    <!-- Stopwatch Panel -->
+    <div class="stopwatch-panel">
+      <div class="sw-title">
+        <span class="dot" id="swDot"></span>
+        <span id="swModeLabel">Kronometre</span>
+        <button id="pomodoroModeBtn" onclick="openPomodoroSettings()" title="Pomodoro Modu"
+          style="margin-left:auto;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:rgba(196,198,208,0.5);cursor:pointer;font-size:10px;padding:3px 8px;font-family:'Syne',sans-serif;font-weight:700;transition:all 0.15s;"
+          onmouseover="this.style.borderColor='#8b5cf6';this.style.color='#8b5cf6'"
+          onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(196,198,208,0.5)'">
+          🍅 Pomodoro
+        </button>
+      </div>
+      <div id="pomodoroInfoBar" style="display:none"></div>
+      <div class="sw-display" id="swDisplay">00:00:00</div>
+      <div class="sw-status" id="swStatus">Bekliyor</div>
+      <div class="sw-btns">
+        <button class="sw-btn primary" id="swPlayPauseBtn" onclick="swToggle()">
+          <span class="icon material-symbols-outlined" id="swPlayPauseIcon">play_arrow</span>
+          <span id="swPlayPauseLbl">Başlat</span>
+        </button>
+        <button class="sw-btn lap-btn" id="swLapBtn" onclick="swLap()">
+          <span class="icon material-symbols-outlined">flag</span> Tur
+        </button>
+        <button class="sw-btn reset-btn" onclick="swReset()">
+          <span class="icon material-symbols-outlined">replay</span>
+        </button>
+      </div>
+      <div class="lap-list" id="lapList"></div>
+    </div>
+
+    <!-- Playlist Panel -->
+    <div class="playlist-panel">
+      <div class="pl-tabs-wrap">
+        <div class="pl-tabs-scroll-track">
+          <div class="pl-tabs-row" id="plTabsRow"></div>
+        </div>
+        <button class="related-tab-btn" id="relatedTabBtn" onclick="switchToRelatedTab()" title="İlgili Videolar">🔀 İlgili</button>
+      </div>
+
+      <div class="pl-content" id="plContent">
+        <div class="pl-header">
+          <div class="pl-search-wrap">
+            <input type="text" id="plSearch" placeholder="Video ara..." oninput="onSearchInput()" autocomplete="off">
+            <button class="pl-search-clear" id="plSearchClear" onclick="clearSearch()">✕</button>
+          </div>
+          <div class="pl-header-btns">
+            <div class="pl-count" id="plCount">0</div>
+            <button class="pl-icon-btn" onclick="openReorderModal()" title="Playlist Sırasını Değiştir">
+              <span class="material-symbols-outlined" style="font-size:15px">swap_vert</span>
+            </button>
+            <button class="pl-icon-btn" onclick="openCatModal()" title="Kategoriler">
+              <span class="material-symbols-outlined" style="font-size:15px">grid_view</span>
+            </button>
+          </div>
+        </div>
+        <div class="playlist" id="playlistEl"></div>
+      </div>
+
+      <!-- Related Panel -->
+      <div class="related-panel" id="relatedPanel">
+        <div class="related-refresh">
+          <span class="related-refresh-lbl" id="relatedRefreshLbl">İlgili Videolar</span>
+          <button class="related-refresh-btn" onclick="fetchRelatedVideos(true)" id="relatedRefreshBtn">↺ Yenile</button>
+        </div>
+        <div id="relatedFilterRow" style="display:none;margin-bottom:6px;gap:5px;flex-direction:column;">
+          <div style="display:flex;gap:5px;align-items:center;">
+            <input class="related-search-input" type="text" id="relatedFilterInput"
+              placeholder='Filtrele... "tam ifade" tırnak içinde'
+              oninput="applyRelatedFilter()"
+              onkeydown="if(event.key==='Enter')fetchRelatedWithFilter()">
+            <button class="related-search-btn" id="relatedFetchFilterBtn"
+              onclick="fetchRelatedWithFilter()" title="Bu anahtar kelimeyle kanalda ara (API)">⟳</button>
+          </div>
+          <div id="relatedFilterInfo" style="font-size:9px;color:rgba(196,198,208,0.4);font-family:'JetBrains Mono',monospace;padding:0 2px;"></div>
+        </div>
+        <div id="relatedKotaBar" style="display:none;margin-bottom:6px;padding:5px 8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+            <span style="font-size:9px;color:rgba(196,198,208,0.4);font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">API Kota</span>
+            <span id="relatedKotaText" style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#4ae176;">0 / 5 arama kullanıldı</span>
+          </div>
+          <div style="margin-top:4px;height:3px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+            <div id="relatedKotaFill" style="height:100%;width:0%;background:#4ae176;border-radius:3px;transition:width 0.4s ease,background 0.3s;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:3px;">
+            <span style="font-size:8px;color:rgba(196,198,208,0.35);font-family:'JetBrains Mono',monospace;">Sıfırlanma: 10:00</span>
+            <span id="relatedKotaReset" style="font-size:8px;color:rgba(196,198,208,0.35);font-family:'JetBrains Mono',monospace;"></span>
+          </div>
+        </div>
+        <div class="related-list" id="relatedList">
+          <div class="related-empty">Video oynatılınca<br>ilgili videolar burada görünür.</div>
+        </div>
+        <div id="relatedSearchArea" style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.05);padding-top:8px;display:none;">
+          <button class="related-yt-search-btn" id="relatedSearchToggleBtn" onclick="toggleRelatedSearch()">
+            🔍 YouTube'da Manuel Ara <span style="font-size:9px;opacity:0.6">(100 kota • günde 5 hak)</span>
+          </button>
+          <div id="relatedSearchBox" style="display:none;margin-top:6px;">
+            <div class="related-search-row">
+              <input class="related-search-input" type="text" id="relatedSearchInput" placeholder="Arama terimi..." onkeydown="if(event.key==='Enter')doRelatedSearch()">
+              <button class="related-search-btn" id="relatedSearchGoBtn" onclick="doRelatedSearch()">Ara</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="pl-progress-wrap" id="plProgressWrap" style="display:none">
+        <div class="pl-progress-row">
+          <span class="pl-progress-text" id="plProgressText">0/0 izlendi</span>
+          <div class="pl-progress-bar"><div class="pl-progress-fill" id="plProgressFill" style="width:0%"></div></div>
+          <span class="pl-progress-pct" id="plProgressPct">0%</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /sidebar -->
+</div><!-- /layout -->
+
+<!-- ═══ VIBES PANEL DROPDOWN ═══ -->
+<div class="vibes-dropdown" id="vibesDropdown" style="display:none">
+  <div class="vibes-dropdown-inner">
+    <!-- Ambient Sounds -->
+    <div class="vibes-ambient-section">
+      <div class="vibes-section-label">🌫 Ortam Sesi</div>
+      <div class="vibes-ambient-row">
+        <button class="vibes-ambient-btn" id="whiteNoiseBtn" onclick="toggleWhiteNoise()" title="Beyaz Gürültü">
+          <span class="material-symbols-outlined" style="font-size:15px">music_note</span>
+          <span id="wnIcon">Beyaz Müzik</span>
+        </button>
+        <button class="vibes-ambient-btn exam" id="examNoiseBtn" onclick="toggleExamNoise()" title="Sınav Ortamı Sesi">
+          <span class="material-symbols-outlined" style="font-size:15px">edit_note</span>
+          <span id="examIcon">Sınav Sesi</span>
+        </button>
+      </div>
+    </div>
+    <!-- Divider -->
+    <div class="vibes-divider"></div>
+    <!-- Music Player -->
+    <div class="vibes-music-section">
+      <div class="vibes-section-label">
+        <span class="material-symbols-outlined" style="font-size:13px;color:#a78bfa;vertical-align:middle">music_note</span>
+        Müzik Player
+        <span class="music-panel-status-tag" id="musicPanelTag"></span>
+      </div>
+      <div id="musicSourceContent"><div class="music-status-text">Yükleniyor...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- YT PLAYLIST IMPORT -->
+<div class="modal-overlay" id="ytImportModalOverlay" onclick="if(event.target===this)closeYtImportModal()">
+  <div class="modal" style="max-width:420px">
+    <h3>▶ YouTube Playlist İçe Aktar</h3>
+    <div class="ytim-authnote" id="ytAuthNote" style="margin-bottom:8px">Playlist çekmek için giriş gerekmez.</div>
+    <!-- Gizli elementler — updateGoogleAuthUI uyumluluğu için -->
+    <button id="ytSignInBtn" onclick="signInGoogle()" style="display:none"></button>
+    <button id="ytSignOutBtn" onclick="signOutGoogle()" style="display:none"></button>
+    <div class="ytim-label" style="margin-top:4px">Playlist Linki</div>
+    <input class="ytim-input" type="text" id="ytImportUrl" placeholder="https://www.youtube.com/playlist?list=..." oninput="onYtImportUrlChange()">
+    <div class="ytim-status" id="ytImportStatus"></div>
+    <div class="ytim-preview" id="ytImportPreview">
+      <div id="ytImportPreviewVids"></div>
+      <div class="ytim-preview-count" id="ytImportPreviewCount"></div>
+    </div>
+    <div class="ytim-label" style="margin-top:10px">Playlist Adı</div>
+    <input class="ytim-input" type="text" id="ytImportName" placeholder="Playlist adı..." onkeydown="if(event.key==='Enter')confirmYtImport()">
+    <div class="modal-btns" style="margin-top:14px">
+      <button class="modal-btn cancel" onclick="closeYtImportModal()">İptal</button>
+      <button class="modal-btn confirm" id="ytImportConfirmBtn" onclick="confirmYtImport()" disabled style="opacity:0.5;cursor:not-allowed">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW PLAYLIST -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal">
+    <h3>Yeni Playlist</h3>
+    <input type="text" id="modalInput" placeholder="Playlist adı..." onkeydown="if(event.key==='Enter')confirmNewPlaylist()">
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal()">İptal</button>
+      <button class="modal-btn confirm" onclick="confirmNewPlaylist()">Oluştur</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="modal-overlay" id="catModalOverlay" onclick="if(event.target===this)closeCatModal()">
+  <div class="modal">
+    <h3>Kategori Yönetimi</h3>
+    <div class="cat-add-row">
+      <input type="text" id="catNameInput" placeholder="Yeni kategori adı..." onkeydown="if(event.key==='Enter')addCategory()">
+      <button class="cat-add-btn" onclick="addCategory()">+ Ekle</button>
+    </div>
+    <div class="cat-list" id="catList"></div>
+    <div class="modal-btns"><button class="modal-btn cancel" onclick="closeCatModal()">Kapat</button></div>
+  </div>
+</div>
+
+<!-- VIDEO CATEGORY MODAL -->
+<div class="modal-overlay" id="vidCatModalOverlay" onclick="if(event.target===this)closeVidCatModal()">
+  <div class="modal">
+    <h3 id="vidCatModalTitle">Kategori Ata</h3>
+    <div class="vid-cat-list" id="vidCatList"></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeVidCatModal()">İptal</button>
+      <button class="modal-btn confirm" onclick="confirmVidCat()">Uygula</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- SHORTCUTS MODAL -->
+<div class="modal-overlay" id="shortcutsModalOverlay" onclick="if(event.target===this)closeShortcutsModal()">
+  <div class="modal" style="max-width:440px">
+    <h3>⌨️ Kısayollar & İpuçları</h3>
+    <div class="sc-tabs">
+      <button class="sc-tab active" id="scTabKeys" onclick="switchScTab('keys')">⌨️ Klavye</button>
+      <button class="sc-tab" id="scTabTips" onclick="switchScTab('tips')">💡 İpuçları</button>
+    </div>
+    <div class="sc-page active" id="scPageKeys">
+      <div class="shortcuts-list">
+        <div class="shortcut-row"><span class="shortcut-desc">1× Normal hız</span><span class="shortcut-key">1</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">2× Hız</span><span class="shortcut-key">2</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">0.5× Yavaş hız</span><span class="shortcut-key">5</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Sonraki video</span><span class="shortcut-key">N</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Önceki video</span><span class="shortcut-key">P</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Kronometre başlat/durdur</span><span class="shortcut-key">S</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Zaman damgası notu ekle</span><span class="shortcut-key">T</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Tam ekran genişlet</span><span class="shortcut-key">F</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Kısayolları göster</span><span class="shortcut-key">?</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Otomatik geçiş aç/kapat</span><span class="shortcut-key">A</span></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Gece yarısı sıfırlama testi</span><span class="shortcut-key">Ctrl+A+S</span></div>
+      </div>
+    </div>
+    <div class="sc-page" id="scPageTips">
+      <div class="tips-title">✨ İpuçları</div>
+      <div class="tips-list">
+        <div class="tip-row"><span class="tip-icon">🛡️</span><span class="tip-text"><strong>ADBLOCKER KULLANIN.</strong> uBlock Origin kurarak YouTube reklamlarını tamamen engelleyebilirsiniz.</span></div>
+        <div class="tip-row"><span class="tip-icon">🔴</span><span class="tip-text">Sol üstteki logo YouTube ana sayfasını yeni sekmede açar.</span></div>
+        <div class="tip-row"><span class="tip-icon">🔗</span><span class="tip-text">Arama çubuğuna YouTube linki yapıştırmak videoyu açar. Aktif playlist varken yapılırsa, video doğrudan o playliste eklenir.</span></div>
+        <div class="tip-row"><span class="tip-icon">🔍</span><span class="tip-text">Arama çubuğuna YouTube araması yazıp Enter'a basarsanız YouTube'a yönlendirilirsiniz.</span></div>
+        <div class="tip-row"><span class="tip-icon">☁️</span><span class="tip-text">Google hesabınıza giriş yaparak verilerinizi Drive'a yedekleyebilirsiniz.</span></div>
+        <div class="tip-row"><span class="tip-icon">📅</span><span class="tip-text">Takvim kısmında hem playlist yöneticisi hem de geçmiş verileriniz bulunur.</span></div>
+      </div>
+    </div>
+    <div class="modal-btns"><button class="modal-btn cancel" onclick="closeShortcutsModal()">Kapat</button></div>
+  </div>
+</div>
+
+<!-- COPY VIDEO MODAL -->
+<div class="modal-overlay" id="copyVideoModalOverlay" onclick="if(event.target===this)closeCopyVideoModal()">
+  <div class="modal">
+    <h3 id="copyVideoModalTitle">Videoyu Kopyala</h3>
+    <p style="font-size:12px;color:rgba(196,198,208,0.5);margin-bottom:12px">Hedef playlist seçin:</p>
+    <div class="copy-pl-list" id="copyPlList"></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeCopyVideoModal()">İptal</button>
+      <button class="modal-btn confirm" onclick="confirmCopyVideo()">Yapıştır</button>
+    </div>
+  </div>
+</div>
+
+<!-- REORDER MODAL -->
+<div class="modal-overlay" id="reorderModalOverlay" onclick="if(event.target===this)closeReorderModal()">
+  <div class="modal">
+    <h3>Playlist Sırasını Değiştir</h3>
+    <p style="font-size:12px;color:rgba(196,198,208,0.5);margin-bottom:12px">Sürükleyerek sırayı değiştirin:</p>
+    <div class="reorder-list" id="reorderList"></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeReorderModal()">İptal</button>
+      <button class="modal-btn confirm" onclick="confirmReorder()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ATTACHMENT VIEWER MODAL -->
+<div class="modal-overlay" id="attachViewModalOverlay" onclick="if(event.target===this)closeAttachViewModal()">
+  <div class="modal" style="width:90vw;max-width:860px;padding:18px">
+    <div class="attach-viewer-title" id="attachViewTitle">Ek Görüntüleyici</div>
+    <div id="attachViewContent"></div>
+    <div class="modal-btns" style="margin-top:12px">
+      <button class="modal-btn cancel" onclick="closeAttachViewModal()">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESTORE CHOICE MODAL -->
+<div class="modal-overlay" id="restoreChoiceOverlay" onclick="if(event.target===this)closeRestoreChoiceModal()">
+  <div class="modal" style="max-width:360px">
+    <h3>↩ Playlist Geri Yükle</h3>
+    <p style="font-size:12px;color:rgba(196,198,208,0.5);margin-bottom:12px"><strong id="restoreChoiceDateLabel"></strong> tarihinin playlistleri geri yüklenecek. Mevcut playlistlerinizde videolar var. Ne yapmak istersiniz?</p>
+    <div>
+      <div class="restore-choice-opt safe" onclick="confirmRestoreChoice('merge')">
+        <div class="restore-choice-opt-title">✅ Mevcut üstüne ekle</div>
+        <div class="restore-choice-opt-desc">Şu anki playlistler korunur, sadece eksik videolar eklenir.</div>
+      </div>
+      <div class="restore-choice-opt danger" onclick="confirmRestoreChoice('replace')">
+        <div class="restore-choice-opt-title">🗑 Mevcut sil, bunları yükle</div>
+        <div class="restore-choice-opt-desc">Mevcut tüm playlist içerikleri silinir ve bu günün playlistleri yüklenir.</div>
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:12px">
+      <button class="modal-btn cancel" onclick="closeRestoreChoiceModal()">İptal</button>
+    </div>
+  </div>
+</div>
+
+<!-- POMODORO SETTINGS -->
+<div class="modal-overlay" id="pomodoroModalOverlay" onclick="if(event.target===this)closePomodoroSettings()">
+  <div class="modal" style="max-width:360px">
+    <h3>🍅 Pomodoro Ayarları</h3>
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:rgba(196,198,208,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Çalışma Süresi (dakika)</div>
+      <input type="number" id="pomWorkMin" min="1" max="120" value="25">
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:rgba(196,198,208,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Mola Süresi (dakika)</div>
+      <input type="number" id="pomBreakMin" min="1" max="60" value="5">
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:rgba(196,198,208,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Tekrar Sayısı</div>
+      <input type="number" id="pomRounds" min="1" max="20" value="4">
+    </div>
+    <div id="pomCurrentStatus" style="display:none"></div>
+    <div class="modal-btns" style="flex-wrap:wrap;gap:6px">
+      <button class="modal-btn cancel" onclick="closePomodoroSettings()">İptal</button>
+      <button class="modal-btn" style="background:rgba(255,255,255,0.05);color:rgba(196,198,208,0.6)" onclick="stopPomodoro()">⬛ Durdur</button>
+      <button class="modal-btn" id="pomPauseBtn" style="background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);color:#f5c842;display:none" onclick="togglePomodoroPlayPause();closePomodoroSettings()">⏸ Duraklat</button>
+      <button class="modal-btn confirm" id="pomStartBtn" onclick="startPomodoro()">🍅 Başlat</button>
+    </div>
+  </div>
+</div>
+
+<!-- CALENDAR / PLANNER / MANAGER PANEL -->
+<div class="cal-panel-overlay" id="calPanelOverlay" onclick="if(event.target===this)closeCalendarPanel()">
+  <div class="cal-panel">
+    <div class="cal-panel-header">
+      <div class="cal-panel-title">📅 Takvim, Grafikler & Playlist Yöneticisi</div>
+      <button class="cal-panel-close" onclick="closeCalendarPanel()">✕</button>
+    </div>
+    <div class="cal-tabs">
+      <div class="cal-tab active" id="calTabStats" onclick="switchCalTab('stats')">İstatistikler</div>
+      <div class="cal-tab" id="calTabHistory" onclick="switchCalTab('history')">Geçmiş</div>
+      <div class="cal-tab" id="calTabPlanner" onclick="switchCalTab('planner')">Planlayıcı</div>
+      <div class="cal-tab" id="calTabManager" onclick="switchCalTab('manager')">Playlist Yöneticisi</div>
+    </div>
+    <div class="cal-body" id="calBody"></div>
+  </div>
+</div>
+
+<!-- AI PANEL -->
+<div class="cal-panel-overlay" id="aiPanelOverlay" onclick="if(event.target===this)closeAiPanel()">
+  <div class="cal-panel">
+    <div class="cal-panel-header">
+      <div class="cal-panel-title">🤖 AI Asistan & Flashcard</div>
+      <div style="display:flex;gap:8px;">
+        <button class="cal-panel-close" onclick="changeAiKey()" title="API Anahtarından Çıkış Yap (Sil)">🚪</button>
+        <button class="cal-panel-close" onclick="closeAiPanel()">✕</button>
+      </div>
+    </div>
+    <div class="cal-tabs">
+      <div class="cal-tab active" id="aiTabChat" onclick="switchAiTab('chat')">Sohbet</div>
+      <div class="cal-tab" id="aiTabCreate" onclick="switchAiTab('create')">Flashcard Oluştur</div>
+      <div class="cal-tab" id="aiTabDeck" onclick="switchAiTab('deck')">Kartlarım</div>
+      <div class="cal-tab" id="aiTabCats" onclick="switchAiTab('cats')">Kategoriler</div>
+    </div>
+    <div class="cal-body" id="aiBody"></div>
+  </div>
+</div>
+
+<!-- FULLSCREEN FLASHCARD VIEWER -->
+<div class="ai-fcv-overlay" id="aiFcvOverlay" onclick="if(event.target===this)closeAiFcv()">
+  <div class="ai-fcv-counter" id="aiFcvCounter"></div>
+  <button class="ai-fcv-close" onclick="closeAiFcv()" title="Kapat">✕</button>
+  <div class="ai-fcv-stage">
+    <button class="ai-fcv-nav" id="aiFcvPrev" onclick="aiFcvNav(-1)" title="Önceki">‹</button>
+    <div class="ai-fcv-card" id="aiFcvCard" onclick="aiFcvFlip(event)">
+      <div class="ai-fcv-card-inner" id="aiFcvCardInner">
+        <div class="ai-fcv-face ai-fcv-front" id="aiFcvFront"></div>
+        <div class="ai-fcv-face ai-fcv-back" id="aiFcvBack"></div>
+      </div>
+    </div>
+    <button class="ai-fcv-nav" id="aiFcvNext" onclick="aiFcvNav(1)" title="Sonraki">›</button>
+  </div>
+</div>
+
+<!-- ═══ NOTLAR (FULLSCREEN) ═══ -->
+<div class="notes-fs-overlay" id="notesFsOverlay">
+  <!-- LIST VIEW: tüm not defterleri -->
+  <div class="notes-fs-list-view" id="notesFsListView">
+    <div class="notes-fs-list-header">
+      <div class="notes-fs-list-title">
+        <span class="material-symbols-outlined" style="font-size:20px;color:var(--gold)">sticky_note_2</span>
+        Notlarım
+      </div>
+      <div class="notes-fs-list-actions">
+        <div class="notes-fs-search-wrap">
+          <span class="material-symbols-outlined" style="font-size:15px;color:var(--muted)">search</span>
+          <input type="text" id="notesFsSearchInput" placeholder="Notlarda ara..." oninput="renderNotesList()">
+        </div>
+        <button class="notes-fs-new-btn" onclick="createNewNotePage()">
+          <span class="material-symbols-outlined" style="font-size:16px">add</span> Yeni Not
+        </button>
+        <button class="notes-fs-close-btn" onclick="closeNotesPanel()" title="Kapat">✕</button>
+      </div>
+    </div>
+    <div class="notes-fs-grid" id="notesFsGrid"></div>
+  </div>
+
+  <!-- EDITOR VIEW: tek bir not sayfası -->
+  <div class="notes-fs-editor-view" id="notesFsEditorView">
+    <div class="notes-editor-topbar">
+      <button class="notes-editor-back-btn" onclick="backToNotesList()" title="Listeye Dön">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <input type="text" id="noteEditorTitleInput" class="notes-editor-title-input" placeholder="Başlıksız Not" oninput="onNoteTitleInput()">
+      <div class="notes-editor-savestate" id="noteEditorSaveState">Kaydedildi</div>
+      <div class="notes-editor-topbar-spacer"></div>
+      <button class="notes-editor-del-btn" onclick="confirmDeleteCurrentNote()" title="Notu Sil">
+        <span class="material-symbols-outlined" style="font-size:17px">delete</span>
+      </button>
+      <button class="notes-editor-close-btn" onclick="closeNotesPanel()" title="Kapat">✕</button>
+    </div>
+
+    <!-- Formatting Toolbar -->
+    <div class="notes-toolbar" id="notesToolbar">
+      <div class="notes-toolbar-group">
+        <button class="notes-tb-btn" data-cmd="bold" title="Kalın (Ctrl+B)"><b>B</b></button>
+        <button class="notes-tb-btn" data-cmd="italic" title="İtalik (Ctrl+I)"><i>i</i></button>
+        <button class="notes-tb-btn" data-cmd="underline" title="Alt Çizili (Ctrl+U)"><u>U</u></button>
+        <button class="notes-tb-btn" data-cmd="strikeThrough" title="Üstü Çizili"><s>S</s></button>
+      </div>
+      <div class="notes-toolbar-sep"></div>
+      <div class="notes-toolbar-group">
+        <select class="notes-tb-select" id="noteFontSizeSelect" title="Yazı Boyutu" onchange="applyNoteFontSize(this.value)">
+          <option value="2">Küçük</option>
+          <option value="3" selected>Normal</option>
+          <option value="4">Orta</option>
+          <option value="5">Büyük</option>
+          <option value="6">Çok Büyük</option>
+          <option value="7">Başlık</option>
+        </select>
+        <select class="notes-tb-select" id="noteFontFamilySelect" title="Yazı Tipi" onchange="applyNoteFontFamily(this.value)">
+          <optgroup label="Klasik">
+            <option value="'Syne',sans-serif">Syne</option>
+            <option value="Georgia,serif">Georgia</option>
+            <option value="Arial,sans-serif">Arial</option>
+            <option value="'Playfair Display',serif">Playfair Display</option>
+            <option value="'Merriweather',serif">Merriweather</option>
+            <option value="'Lora',serif">Lora</option>
+            <option value="'EB Garamond',serif">EB Garamond</option>
+          </optgroup>
+          <optgroup label="Modern">
+            <option value="'Inter',sans-serif">Inter</option>
+            <option value="'Roboto',sans-serif">Roboto</option>
+            <option value="'Poppins',sans-serif">Poppins</option>
+            <option value="'Montserrat',sans-serif">Montserrat</option>
+            <option value="'Nunito',sans-serif">Nunito</option>
+            <option value="'Raleway',sans-serif">Raleway</option>
+          </optgroup>
+          <optgroup label="Monospace">
+            <option value="'JetBrains Mono',monospace">JetBrains Mono</option>
+            <option value="'Fira Code',monospace">Fira Code</option>
+            <option value="'Space Mono',monospace">Space Mono</option>
+          </optgroup>
+          <optgroup label="El Yazısı">
+            <option value="'Caveat',cursive">Caveat</option>
+            <option value="'Dancing Script',cursive">Dancing Script</option>
+            <option value="'Comic Sans MS',cursive">El Yazısı (Comic Sans)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="notes-toolbar-sep"></div>
+      <div class="notes-toolbar-group">
+        <button class="notes-tb-btn notes-tb-color-btn" id="noteTextColorBtn" title="Yazı Rengi" onmousedown="_captureNoteColorSelection(event)" onclick="openNoteColorPopup(this,'text')">
+          <span class="material-symbols-outlined" style="font-size:16px">format_color_text</span>
+          <span class="notes-tb-color-bar" id="noteTextColorBar" style="background:#e2e2e9"></span>
+        </button>
+        <button class="notes-tb-btn notes-tb-color-btn" id="noteHiliteColorBtn" title="Vurgu Rengi" onmousedown="_captureNoteColorSelection(event)" onclick="openNoteColorPopup(this,'hilite')">
+          <span class="material-symbols-outlined" style="font-size:16px">format_ink_highlighter</span>
+          <span class="notes-tb-color-bar" id="noteHiliteColorBar" style="background:transparent"></span>
+        </button>
+      </div>
+      <div class="notes-toolbar-sep"></div>
+      <div class="notes-toolbar-group">
+        <button class="notes-tb-btn" data-cmd="insertUnorderedList" title="Madde Listesi">
+          <span class="material-symbols-outlined" style="font-size:16px">format_list_bulleted</span>
+        </button>
+        <button class="notes-tb-btn" data-cmd="insertOrderedList" title="Numaralı Liste">
+          <span class="material-symbols-outlined" style="font-size:16px">format_list_numbered</span>
+        </button>
+        <button class="notes-tb-btn" data-cmd="formatBlock:blockquote" title="Alıntı">
+          <span class="material-symbols-outlined" style="font-size:16px">format_quote</span>
+        </button>
+      </div>
+      <div class="notes-toolbar-sep"></div>
+      <div class="notes-toolbar-group">
+        <button class="notes-tb-btn" title="Video Ekle" onclick="openNoteVideoPicker()">
+          <span class="material-symbols-outlined" style="font-size:16px;color:#ff5252">smart_display</span>
+        </button>
+        <button class="notes-tb-btn" title="Zaman Damgası Notu Ekle" onclick="openNoteTimestampPicker()">
+          <span class="material-symbols-outlined" style="font-size:16px;color:#4ae176">schedule</span>
+        </button>
+        <button class="notes-tb-btn" title="Flashcard Ekle" onclick="openNoteFlashcardPicker()">
+          <span class="material-symbols-outlined" style="font-size:16px;color:#a78bfa">style</span>
+        </button>
+        <button class="notes-tb-btn" title="Fotoğraf Ekle" onclick="triggerNoteImageUpload()">
+          <span class="material-symbols-outlined" style="font-size:16px;color:#3b82f6">image</span>
+        </button>
+        <button class="notes-tb-btn" title="PDF Ekle" onclick="triggerNotePdfUpload()">
+          <span class="material-symbols-outlined" style="font-size:16px;color:#f5c842">picture_as_pdf</span>
+        </button>
+      </div>
+      <div class="notes-toolbar-sep"></div>
+      <div class="notes-toolbar-group">
+        <button class="notes-tb-btn" title="Sembol Paneli (Matematik / Yunan / Ok / Para / Mantık / Geometri)" onclick="toggleNoteSymbolPanel()">
+          <span class="material-symbols-outlined" style="font-size:16px;color:#a78bfa">functions</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="notes-editor-scroll">
+      <div class="notes-editor-page">
+        <div class="notes-editor-content" id="noteEditorContent" contenteditable="true" data-placeholder="Yazmaya başla... '/' ile blok ekleyebilirsin (video, zaman damgası, flashcard, fotoğraf, pdf)"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notes: Sembol Paneli (Matematik / Yunan / Ok / Para / Mantık / Geometri) -->
+<div class="note-symbol-panel-ov" id="noteSymbolPanelOv">
+  <div class="note-symbol-panel-box">
+    <div class="note-symbol-panel-header">
+      <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent)">functions</span>
+      <span class="note-symbol-panel-title">Sembol Paneli</span>
+      <button class="note-symbol-panel-close" onclick="closeNoteSymbolPanel()" title="Kapat">✕</button>
+    </div>
+    <div class="io-tabs note-symbol-tabs" id="noteSymbolTabs"></div>
+    <div class="note-symbol-grid" id="noteSymbolGrid"></div>
+    <div class="note-symbol-panel-hint">Bir sembole tıkla — imlecin bulunduğu yere satır içi olarak eklenir.</div>
+  </div>
+</div>
+
+<!-- Notes: Color Popup (text/highlight) -->
+<div class="color-picker-popup" id="noteColorPopup" style="display:none;">
+  <h4 id="noteColorPopupTitle">Renk Seç</h4>
+  <div class="color-swatches" id="noteColorSwatches"></div>
+</div>
+
+<!-- Notes: Video Picker Modal -->
+<div class="modal-overlay" id="noteVideoPickerOverlay" onclick="if(event.target===this)closeNoteVideoPicker()">
+  <div class="modal" style="max-width:480px">
+    <h3>🎬 Playlistten Video Seç</h3>
+    <div class="note-picker-search-row">
+      <input type="text" id="noteVideoPickerSearch" placeholder="Video veya playlist ara..." oninput="renderNoteVideoPickerList()">
+    </div>
+    <div class="note-picker-list" id="noteVideoPickerList"></div>
+    <div class="modal-btns" style="margin-top:10px">
+      <button class="modal-btn cancel" onclick="closeNoteVideoPicker()">İptal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notes: Timestamp Note Picker Modal -->
+<div class="modal-overlay" id="noteTsPickerOverlay" onclick="if(event.target===this)closeNoteTimestampPicker()">
+  <div class="modal" style="max-width:480px">
+    <h3>⏱ Zaman Damgası Notu Seç</h3>
+    <div class="note-picker-search-row">
+      <input type="text" id="noteTsPickerSearch" placeholder="Not, video veya playlist ara..." oninput="renderNoteTsPickerList()">
+    </div>
+    <div class="note-picker-list" id="noteTsPickerList"></div>
+    <div class="modal-btns" style="margin-top:10px">
+      <button class="modal-btn cancel" onclick="closeNoteTimestampPicker()">İptal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notes: Flashcard Picker Modal -->
+<div class="modal-overlay" id="noteFcPickerOverlay" onclick="if(event.target===this)closeNoteFlashcardPicker()">
+  <div class="modal" style="max-width:480px">
+    <h3>🎴 Flashcard Seç</h3>
+    <div class="note-picker-search-row">
+      <input type="text" id="noteFcPickerSearch" placeholder="Kart, ders veya konu ara..." oninput="renderNoteFcPickerList()">
+    </div>
+    <div class="note-picker-list" id="noteFcPickerList"></div>
+    <div class="modal-btns" style="margin-top:10px">
+      <button class="modal-btn cancel" onclick="closeNoteFlashcardPicker()">İptal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notes: Delete Confirm Modal -->
+<div class="modal-overlay" id="noteDeleteConfirmOverlay" onclick="if(event.target===this)closeNoteDeleteConfirm()">
+  <div class="modal" style="max-width:340px">
+    <h3>🗑 Notu Sil</h3>
+    <p style="font-size:12.5px;color:var(--text2);margin:0 0 14px">Bu not kalıcı olarak silinecek. Bu işlem geri alınamaz.</p>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeNoteDeleteConfirm()">İptal</button>
+      <button class="modal-btn danger" onclick="executeDeleteCurrentNote()">Sil</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notes: Inline Flashcard Mini Viewer (AI sekmesi açılmaz) -->
+<div class="note-fc-mini-overlay" id="noteFcMiniOverlay" onclick="if(event.target===this)closeNoteFcMini()">
+  <button class="ai-fcv-close" onclick="closeNoteFcMini()" title="Kapat" style="position:fixed;top:18px;right:22px">✕</button>
+  <div class="ai-fcv-card" id="noteFcMiniCard" onclick="noteFcMiniFlip(event)">
+    <div class="ai-fcv-card-inner" id="noteFcMiniCardInner">
+      <div class="ai-fcv-face ai-fcv-front" id="noteFcMiniFront"></div>
+      <div class="ai-fcv-face ai-fcv-back" id="noteFcMiniBack"></div>
+    </div>
+  </div>
+</div>
+
+<!-- COLOR PICKER -->
+<div class="color-picker-popup" id="colorPickerPopup" style="display:none;">
+  <h4>Renk Seç</h4>
+  <div id="colorPickerNameRow" style="display:none;margin-bottom:8px;">
+    <input id="colorPickerNameInput" type="text" placeholder="İsim..."
+      style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:5px 9px;font-size:12px;color:#e2e2e9;outline:none;font-family:inherit;">
+  </div>
+  <div class="color-swatches" id="colorSwatches"></div>
+</div>
+
+<!-- Theme toggle helper + AI panel bridge -->
+<script>
+/* AI panel bridge — these may be overridden by ai.js, but we ensure
+   the central panel manager is always called so panels close each other */
+function openAiPanel(){
+  if(typeof _openPanel === 'function') _openPanel('ai');
+  else { var o=document.getElementById('aiPanelOverlay'); if(o) o.classList.add('open'); }
+}
+function closeAiPanel(){
+  if(typeof _closePanel === 'function') _closePanel('ai');
+  else { var o=document.getElementById('aiPanelOverlay'); if(o) o.classList.remove('open'); }
+}
+function openNotesPanel(){
+  if(typeof _openPanel === 'function') _openPanel('notes');
+  else { var o=document.getElementById('notesFsOverlay'); if(o) o.classList.add('open'); }
+}
+function closeNotesPanel(){
+  if(typeof _closePanel === 'function') _closePanel('notes');
+  else { var o=document.getElementById('notesFsOverlay'); if(o) o.classList.remove('open'); }
+}
+
+function toggleExpand() {
+  const layout = document.getElementById('mainLayout');
+  layout.classList.toggle('expanded');
+  document.getElementById('expandIcon').textContent =
+    layout.classList.contains('expanded') ? 'fullscreen_exit' : 'fullscreen';
+}
+function openShortcutsModal() {
+  document.getElementById('shortcutsModalOverlay').classList.add('open');
+}
+function closeShortcutsModal() {
+  document.getElementById('shortcutsModalOverlay').classList.remove('open');
+}
+function switchScTab(tab) {
+  document.querySelectorAll('.sc-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sc-page').forEach(p => p.classList.remove('active'));
+  const key = tab.charAt(0).toUpperCase() + tab.slice(1);
+  const tabEl = document.getElementById('scTab' + key);
+  const pageEl = document.getElementById('scPage' + key);
+  if (tabEl) tabEl.classList.add('active');
+  if (pageEl) pageEl.classList.add('active');
+}
+</script>
+
+<script src="js/music.js"></script>
+<script src="js/core.js"></script>
+<script src="js/features.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/notes.js"></script>
+<script>
+/* After ai.js loads, re-wrap openAiPanel/closeAiPanel to go through central panel manager */
+(function(){
+  var _origOpen  = (typeof openAiPanel  === 'function') ? openAiPanel  : null;
+  var _origClose = (typeof closeAiPanel === 'function') ? closeAiPanel : null;
+  openAiPanel = function(){
+    if(typeof _openPanel === 'function') _openPanel('ai');
+    else if(_origOpen) _origOpen();
+  };
+  closeAiPanel = function(){
+    if(typeof _closePanel === 'function') _closePanel('ai');
+    else if(_origClose) _origClose();
+  };
+})();
+</script>
+</body>
+</html>
